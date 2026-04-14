@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RODRIGO — COMMAND CENTER</title>
+<style>
+*{-webkit-box-sizing:border-box;box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-tap-highlight-color:transparent;}
+body{background:#080808;color:#f0f0f0;font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:1.4;min-height:100%;overflow-x:hidden;}
+button{cursor:pointer;border:none;outline:none;font-family:inherit;}
+
+/* ── HEADER ── */
+.hdr{background:#0d0d0d;border-bottom:2px solid #c9a84c;padding:10px 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:6px;}
+.hdr-name{font-size:17px;font-weight:900;color:#c9a84c;letter-spacing:3px;text-transform:uppercase;}
+.hdr-sub{font-size:9px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+.hdr-verse{font-size:11px;color:#c9a84c;font-style:italic;text-align:center;line-height:1.5;}
+.hdr-verse-ref{font-size:9px;color:#555;text-align:center;margin-top:1px;letter-spacing:.5px;}
+.hdr-right{text-align:right;}
+#live-clock{font-size:28px;font-weight:900;color:#fff;letter-spacing:2px;line-height:1;}
+#live-date{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+
+/* ── ALERT BANNER ── */
+#focus-alert{display:none;background:#2a0800;border-bottom:2px solid #f44336;border-top:1px solid #f44336;padding:10px 16px;text-align:center;}
+#focus-alert-text{font-size:14px;font-weight:900;color:#f44336;letter-spacing:1px;text-transform:uppercase;}
+
+/* ── DO THIS NOW ── */
+#do-now-bar{background:#120e00;border-bottom:2px solid #c9a84c;padding:10px 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;gap:12px;-ms-flex-wrap:wrap;flex-wrap:wrap;}
+.do-now-label{font-size:9px;font-weight:900;color:#c9a84c;letter-spacing:2px;text-transform:uppercase;white-space:nowrap;background:#1a1500;border:1px solid #3a2a00;border-radius:2px;padding:3px 8px;}
+#do-now-text{font-size:13px;font-weight:700;color:#fff;line-height:1.4;-webkit-box-flex:1;-ms-flex:1;flex:1;}
+
+/* ── TIMELINE ── */
+.timeline-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:0;border-bottom:1px solid #1e1e1e;background:#0a0a0a;}
+.timeline-inner{display:-webkit-box;display:-ms-flexbox;display:flex;min-width:max-content;padding:8px 12px;gap:4px;}
+.tl-block{background:#161616;border:1px solid #222;border-radius:3px;padding:7px 10px;min-width:100px;text-align:center;cursor:default;-webkit-transition:border-color .15s;transition:border-color .15s;}
+.tl-block.current{background:#1a1500;border-color:#c9a84c;}
+.tl-block.done{background:#0d0d0d;border-color:#1a1a1a;opacity:.6;}
+.tl-time{font-size:10px;font-weight:700;color:#555;letter-spacing:.5px;}
+.tl-block.current .tl-time{color:#c9a84c;}
+.tl-name{font-size:11px;font-weight:600;color:#aaa;margin-top:2px;line-height:1.2;}
+.tl-block.current .tl-name{color:#fff;font-weight:800;}
+
+/* ── GRID ── */
+.grid{padding:12px 14px;display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:10px;}
+.col-12{width:100%;}
+.col-8{width:calc(66.666% - 5px);}
+.col-6{width:calc(50% - 5px);}
+.col-5{width:calc(41.666% - 5px);}
+.col-7{width:calc(58.333% - 5px);}
+.col-4{width:calc(33.333% - 7px);}
+.col-3{width:calc(25% - 8px);}
+@media(max-width:900px){.col-8,.col-7{width:100%;}.col-5,.col-4{width:calc(50% - 5px);}.col-3{width:calc(50% - 5px);}}
+@media(max-width:600px){.col-6,.col-5,.col-4,.col-3{width:100%;}}
+
+/* ── CARD ── */
+.card{background:#111;border:1px solid #1e1e1e;border-radius:4px;overflow:hidden;}
+.card-hdr{background:#161616;border-bottom:1px solid #222;padding:8px 12px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;}
+.card-title{font-size:9px;font-weight:800;color:#c9a84c;letter-spacing:2px;text-transform:uppercase;}
+.badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:2px;letter-spacing:.5px;text-transform:uppercase;}
+.bg-gold{background:#2a1f00;color:#c9a84c;}
+.bg-green{background:#0a1f0a;color:#4caf50;}
+.bg-red{background:#1f0a0a;color:#f44336;}
+.bg-blue{background:#0a0f1f;color:#42a5f5;}
+.bg-grey{background:#1e1e1e;color:#888;}
+
+/* ── METRIC COUNTERS ── */
+.metrics-grid{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:8px;padding:10px;}
+.metric-box{-webkit-box-flex:1;-ms-flex:1 1 100px;flex:1 1 100px;background:#161616;border:1px solid #222;border-radius:4px;padding:10px 8px;text-align:center;}
+.metric-val{font-size:32px;font-weight:900;line-height:1;color:#c9a84c;}
+.metric-val.green{color:#4caf50;}
+.metric-val.blue{color:#42a5f5;}
+.metric-val.red{color:#f44336;}
+.metric-val.white{color:#fff;}
+.metric-lbl{font-size:9px;color:#555;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.metric-goal{font-size:9px;color:#333;margin-top:1px;}
+.metric-btns{display:-webkit-box;display:-ms-flexbox;display:flex;gap:4px;margin-top:6px;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;}
+.mbtn{background:#222;color:#aaa;font-size:13px;font-weight:700;padding:3px 10px;border-radius:2px;border:1px solid #2a2a2a;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+.mbtn:active{background:#333;}
+.mbtn.plus{background:#1a1500;color:#c9a84c;border-color:#2a2000;}
+.mbtn.plus:active{background:#2a2000;}
+
+/* ── CHECKLIST ── */
+.checklist{list-style:none;padding:10px;}
+.cl-item{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #181818;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+.cl-item:last-child{border-bottom:none;}
+.cl-item:active{opacity:.7;}
+.cl-box{width:18px;height:18px;border:2px solid #333;border-radius:2px;background:#161616;-ms-flex-negative:0;flex-shrink:0;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;}
+.cl-box.done{background:#c9a84c;border-color:#c9a84c;}
+.cl-check{font-size:12px;color:#000;font-weight:900;display:none;}
+.cl-box.done .cl-check{display:block;}
+.cl-text{font-size:13px;color:#ccc;-webkit-box-flex:1;-ms-flex:1;flex:1;line-height:1.3;}
+.cl-item.done-item .cl-text{color:#444;text-decoration:line-through;}
+.cl-time{font-size:9px;color:#333;white-space:nowrap;}
+
+/* ── PHASE INSTRUCTIONS ── */
+.instr-block{padding:12px;}
+.instr-step{display:-webkit-box;display:-ms-flexbox;display:flex;gap:10px;padding:9px 0;border-bottom:1px solid #181818;-webkit-box-align:flex-start;-ms-flex-align:flex-start;align-items:flex-start;}
+.instr-step:last-child{border-bottom:none;}
+.instr-num{width:22px;height:22px;background:#c9a84c;color:#000;font-size:10px;font-weight:900;border-radius:3px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-ms-flex-negative:0;flex-shrink:0;margin-top:1px;}
+.instr-num.blue{background:#42a5f5;}
+.instr-num.green{background:#4caf50;}
+.instr-num.red{background:#f44336;}
+.instr-title{font-size:12px;font-weight:700;color:#eee;line-height:1.3;}
+.instr-detail{font-size:11px;color:#666;margin-top:2px;line-height:1.5;}
+.instr-detail strong{color:#c9a84c;font-weight:700;}
+
+/* ── LEAD TRACKER ── */
+.lead-form{padding:10px 12px;border-bottom:1px solid #1e1e1e;display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:6px;}
+.lead-input{background:#161616;border:1px solid #2a2a2a;border-radius:3px;color:#f0f0f0;font-size:12px;padding:7px 10px;font-family:inherit;-webkit-box-flex:1;-ms-flex:1 1 120px;flex:1 1 120px;}
+.lead-input:focus{outline:none;border-color:#c9a84c;}
+.lead-input::-webkit-input-placeholder{color:#444;}
+.btn-add{background:#c9a84c;color:#000;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;padding:7px 14px;border-radius:3px;white-space:nowrap;}
+.btn-add:active{background:#b8943c;}
+.lead-list{max-height:320px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.lead-item{padding:9px 12px;border-bottom:1px solid #181818;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:6px;}
+.lead-item:last-child{border-bottom:none;}
+.lead-main{-webkit-box-flex:1;-ms-flex:1;flex:1;min-width:120px;}
+.lead-name{font-size:12px;font-weight:700;color:#eee;}
+.lead-phone{font-size:11px;color:#555;margin-top:1px;}
+.lead-notes{font-size:10px;color:#444;margin-top:1px;font-style:italic;}
+.lead-actions{display:-webkit-box;display:-ms-flexbox;display:flex;gap:5px;-ms-flex-wrap:wrap;flex-wrap:wrap;}
+.ltag{font-size:9px;font-weight:700;padding:3px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;border:1px solid transparent;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
+.ltag:active{opacity:.7;}
+.ltag-called{background:#0a1f0a;color:#4caf50;border-color:#1a3a1a;}
+.ltag-called.off{background:#1e1e1e;color:#444;border-color:#2a2a2a;}
+.ltag-followup{background:#1f0a00;color:#f57c00;border-color:#3a1a00;}
+.ltag-followup.off{background:#1e1e1e;color:#444;border-color:#2a2a2a;}
+.ltag-del{background:#1f0a0a;color:#f44336;border-color:#3a1a1a;}
+.lead-empty{padding:20px;text-align:center;font-size:12px;color:#333;letter-spacing:.5px;}
+
+/* ── MORNING ROUTINE ── */
+.routine-steps{padding:10px;}
+.routine-step{display:-webkit-box;display:-ms-flexbox;display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #181818;-webkit-box-align:center;-ms-flex-align:center;align-items:center;}
+.routine-step:last-child{border-bottom:none;}
+.r-time{font-size:10px;font-weight:700;color:#c9a84c;width:55px;-ms-flex-negative:0;flex-shrink:0;letter-spacing:.5px;}
+.r-text{font-size:12px;color:#ccc;}
+.r-dot{width:6px;height:6px;border-radius:50%;background:#333;-ms-flex-negative:0;flex-shrink:0;}
+.r-dot.gold{background:#c9a84c;}
+.r-dot.green{background:#4caf50;}
+
+/* ── SCRIPT BOX ── */
+.script-wrap{padding:0 12px 12px;}
+.script-box{background:#0d1a0d;border:1px solid #1a3a1a;border-left:3px solid #4caf50;border-radius:3px;padding:10px 12px;margin-bottom:7px;}
+.script-box:last-child{margin-bottom:0;}
+.script-box.gold{background:#120e00;border-color:#2a2000;border-left-color:#c9a84c;}
+.script-lbl{font-size:9px;font-weight:800;color:#4caf50;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:5px;}
+.script-box.gold .script-lbl{color:#c9a84c;}
+.script-text{font-size:11px;color:#bbb;line-height:1.65;font-style:italic;}
+
+/* ── OFFER ── */
+.offer-card{border:2px solid #c9a84c;background:#0a0a0a;}
+.offer-card .card-hdr{background:#120e00;border-bottom:1px solid #c9a84c;}
+.offer-hl{padding:12px 14px;font-size:13px;font-weight:700;color:#c9a84c;line-height:1.6;border-bottom:1px solid #1e1e1e;}
+.offer-row{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:10px;padding:12px 14px;}
+.offer-col{-webkit-box-flex:1;-ms-flex:1 1 200px;flex:1 1 200px;}
+.offer-col-title{font-size:9px;font-weight:800;color:#c9a84c;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid #1e1e1e;}
+.offer-col ul{list-style:none;padding:0;}
+.offer-col ul li{font-size:11px;color:#aaa;padding:3px 0 3px 12px;position:relative;border-bottom:1px solid #181818;line-height:1.4;}
+.offer-col ul li:before{content:"›";position:absolute;left:0;color:#c9a84c;font-weight:700;}
+.price-line{padding:7px 0;border-bottom:1px solid #181818;}
+.price-line:last-child{border-bottom:none;}
+.price-val{font-size:20px;font-weight:900;color:#c9a84c;}
+.price-desc{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+
+/* ── ALERT BOX ── */
+.alert-box{margin:0 12px 10px;background:#1a0800;border:1px solid #3a1400;border-left:3px solid #f57c00;border-radius:3px;padding:9px 11px;}
+.alert-title{font-size:9px;font-weight:800;color:#f57c00;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px;}
+.alert-text{font-size:11px;color:#aaa;line-height:1.5;}
+
+/* ── FOOTER ── */
+.footer{background:#0a0a0a;border-top:1px solid #181818;padding:7px 16px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:4px;}
+.footer-l{font-size:9px;color:#333;letter-spacing:1px;}
+.footer-l span{color:#c9a84c;}
+.footer-r{font-size:9px;color:#2a2a2a;}
+
+/* ── RESET BTN ── */
+.btn-reset-day{background:#1a0a0a;color:#f44336;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:2px;border:1px solid #3a1a1a;}
+.btn-reset-day:active{background:#2a0f0f;}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="hdr">
+  <div>
+    <div class="hdr-name">Rodrigo Advisory</div>
+    <div class="hdr-sub">Life + Business Operating System</div>
+  </div>
+  <div style="text-align:center;-webkit-box-flex:1;-ms-flex:1;flex:1;padding:0 10px;">
+    <div class="hdr-verse">"Commit your works to the Lord, and your plans will be established."</div>
+    <div class="hdr-verse-ref">Proverbs 16:3 (NASB)</div>
+  </div>
+  <div class="hdr-right">
+    <div id="live-clock">--:--:--</div>
+    <div id="live-date">Loading...</div>
+    <button class="btn-reset-day" onclick="RC.resetDay()">Reset Day</button>
+  </div>
+</div>
+
+<!-- ── FOCUS ALERT ── -->
+<div id="focus-alert">
+  <div id="focus-alert-text">YOU ARE BEHIND — START DIALING NOW</div>
+</div>
+
+<!-- ── DO THIS NOW ── -->
+<div id="do-now-bar">
+  <div class="do-now-label">DO THIS NOW</div>
+  <div id="do-now-text">Loading your next action...</div>
+</div>
+
+<!-- ── TIMELINE ── -->
+<div class="timeline-wrap">
+  <div class="timeline-inner" id="timeline"></div>
+</div>
+
+<!-- ── MAIN GRID ── -->
+<div class="grid">
+
+  <!-- CURRENT PHASE INSTRUCTIONS -->
+  <div class="card col-8" id="phase-card">
+    <div class="card-hdr">
+      <div class="card-title" id="phase-card-title">Current Phase</div>
+      <div class="badge bg-gold" id="phase-card-badge">Live</div>
+    </div>
+    <div id="phase-instructions"></div>
+  </div>
+
+  <!-- DAILY CHECKLIST -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Daily Checklist</div>
+      <div class="badge bg-gold" id="cl-progress-badge">0 / 9</div>
+    </div>
+    <ul class="checklist" id="checklist">
+      <li class="cl-item" data-key="bible" onclick="RC.toggleCheck('bible')">
+        <div class="cl-box" id="cl-bible"><span class="cl-check">✓</span></div>
+        <div class="cl-text">Bible + Prayer</div>
+        <div class="cl-time">6:00 AM</div>
+      </li>
+      <li class="cl-item" data-key="movement" onclick="RC.toggleCheck('movement')">
+        <div class="cl-box" id="cl-movement"><span class="cl-check">✓</span></div>
+        <div class="cl-text">Morning Movement / Walk</div>
+        <div class="cl-time">6:30 AM</div>
+      </li>
+      <li class="cl-item" data-key="ready" onclick="RC.toggleCheck('ready')">
+        <div class="cl-box" id="cl-ready"><span class="cl-check">✓</span></div>
+        <div class="cl-text">Dressed + Ready by 7:45</div>
+        <div class="cl-time">7:45 AM</div>
+      </li>
+      <li class="cl-item" data-key="calls25" onclick="RC.toggleCheck('calls25')">
+        <div class="cl-box" id="cl-calls25"><span class="cl-check">✓</span></div>
+        <div class="cl-text">25 Calls Made</div>
+        <div class="cl-time">8–12 PM</div>
+      </li>
+      <li class="cl-item" data-key="dms20" onclick="RC.toggleCheck('dms20')">
+        <div class="cl-box" id="cl-dms20"><span class="cl-check">✓</span></div>
+        <div class="cl-text">20 DMs / Outreach Sent</div>
+        <div class="cl-time">AM/PM</div>
+      </li>
+      <li class="cl-item" data-key="workout1" onclick="RC.toggleCheck('workout1')">
+        <div class="cl-box" id="cl-workout1"><span class="cl-check">✓</span></div>
+        <div class="cl-text">Activation Workout</div>
+        <div class="cl-time">12:30 PM</div>
+      </li>
+      <li class="cl-item" data-key="followups10" onclick="RC.toggleCheck('followups10')">
+        <div class="cl-box" id="cl-followups10"><span class="cl-check">✓</span></div>
+        <div class="cl-text">10 Follow-Ups Sent</div>
+        <div class="cl-time">2–4 PM</div>
+      </li>
+      <li class="cl-item" data-key="content1" onclick="RC.toggleCheck('content1')">
+        <div class="cl-box" id="cl-content1"><span class="cl-check">✓</span></div>
+        <div class="cl-text">1 Content Post Published</div>
+        <div class="cl-time">By 5 PM</div>
+      </li>
+      <li class="cl-item" data-key="workout2" onclick="RC.toggleCheck('workout2')">
+        <div class="cl-box" id="cl-workout2"><span class="cl-check">✓</span></div>
+        <div class="cl-text">Main Gym Session</div>
+        <div class="cl-time">4:30 PM</div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- INTERACTIVE METRICS -->
+  <div class="card col-12">
+    <div class="card-hdr">
+      <div class="card-title">Today's Scorecard — Tap to Update</div>
+      <div class="badge bg-red" id="metrics-badge">Day 1</div>
+    </div>
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-val" id="mv-calls">0</div>
+        <div class="metric-lbl">Calls Made</div>
+        <div class="metric-goal">Goal: 25</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('calls')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('calls')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val blue" id="mv-convos">0</div>
+        <div class="metric-lbl">Conversations</div>
+        <div class="metric-goal">Goal: 10</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('convos')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('convos')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val green" id="mv-appts">0</div>
+        <div class="metric-lbl">Appointments</div>
+        <div class="metric-goal">Goal: 2–5</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('appts')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('appts')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val" id="mv-dms">0</div>
+        <div class="metric-lbl">DMs Sent</div>
+        <div class="metric-goal">Goal: 20</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('dms')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('dms')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val blue" id="mv-followups">0</div>
+        <div class="metric-lbl">Follow-Ups</div>
+        <div class="metric-goal">Goal: 10</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('followups')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('followups')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val green" id="mv-content">0</div>
+        <div class="metric-lbl">Content Posted</div>
+        <div class="metric-goal">Goal: 1</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('content')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('content')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val red" id="mv-clients">0</div>
+        <div class="metric-lbl">Clients Signed</div>
+        <div class="metric-goal">Goal: 1</div>
+        <div class="metric-btns">
+          <button class="mbtn" onclick="RC.dec('clients')">−</button>
+          <button class="mbtn plus" onclick="RC.inc('clients')">+1</button>
+        </div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-val white" id="mv-revenue">$0</div>
+        <div class="metric-lbl">Revenue Closed</div>
+        <div class="metric-goal">Goal: $1,500+</div>
+        <div style="margin-top:6px;">
+          <input id="revenue-input" type="number" style="background:#1e1e1e;border:1px solid #2a2a2a;border-radius:2px;color:#fff;font-size:11px;padding:4px 6px;width:80px;text-align:center;" placeholder="$0" oninput="RC.setRevenue(this.value)">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MORNING ROUTINE -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Morning Routine — 6:00 AM Start</div>
+      <div class="badge bg-gold">Daily</div>
+    </div>
+    <div class="routine-steps">
+      <div class="routine-step">
+        <div class="r-dot gold"></div>
+        <div class="r-time">6:00 AM</div>
+        <div class="r-text">Wake up — No phone. Straight up.</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot gold"></div>
+        <div class="r-time">6:05 AM</div>
+        <div class="r-text">Prayer — Commit the day to God</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot gold"></div>
+        <div class="r-time">6:15 AM</div>
+        <div class="r-text">Bible — Read Proverbs 16:3 + one chapter</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot green"></div>
+        <div class="r-time">6:30 AM</div>
+        <div class="r-text">Movement — Walk, stretch, or light cardio</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot green"></div>
+        <div class="r-time">7:00 AM</div>
+        <div class="r-text">Breakfast — Protein. No junk. Fuel up.</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot gold"></div>
+        <div class="r-time">7:15 AM</div>
+        <div class="r-text">Build call list — 20+ businesses, numbers ready</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot gold"></div>
+        <div class="r-time">7:45 AM</div>
+        <div class="r-text">Dressed, ready, list loaded. Read offer aloud.</div>
+      </div>
+      <div class="routine-step">
+        <div class="r-dot" style="background:#f44336;"></div>
+        <div class="r-time">8:00 AM</div>
+        <div class="r-text"><strong style="color:#f44336;">DIAL. Call block starts. No delays.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKOUT BLOCKS -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Workout Schedule</div>
+      <div class="badge bg-green">Both Required</div>
+    </div>
+    <div style="padding:10px;">
+      <div style="background:#0a1a0a;border:1px solid #1a3a1a;border-left:3px solid #4caf50;border-radius:3px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:9px;font-weight:800;color:#4caf50;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Block 1 — Activation</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;">12:30 – 1:30 PM</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">Light strength or bodyweight. 30–45 min. Energize for the afternoon block. Do not skip — discipline is binary.</div>
+      </div>
+      <div style="background:#0a1a0a;border:1px solid #1a3a1a;border-left:3px solid #4caf50;border-radius:3px;padding:12px;">
+        <div style="font-size:9px;font-weight:800;color:#4caf50;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Block 2 — Main Gym</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;">4:30 – 6:30 PM</div>
+        <div style="font-size:11px;color:#888;margin-top:4px;line-height:1.5;">Compound lifts. Push/pull/legs. 60–90 min. This is where you build the body that matches your business. Full effort.</div>
+      </div>
+      <div style="margin-top:8px;background:#1a0a00;border:1px solid #3a1800;border-radius:3px;padding:9px 11px;">
+        <div style="font-size:11px;color:#f57c00;line-height:1.5;">Discipline in the gym = discipline on the phones. If you skip either block, you are telling yourself you don't follow through. Show up.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIORITIES -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Today's Priorities</div>
+      <div class="badge bg-red">Non-Negotiable</div>
+    </div>
+    <div style="padding:10px;">
+      <div style="background:#1a0a00;border:1px solid #3a1400;border-left:3px solid #f44336;border-radius:3px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:9px;font-weight:800;color:#f44336;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Priority #1</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;">GET CLIENTS</div>
+        <div style="font-size:11px;color:#888;margin-top:3px;">25+ calls. 2–5 appointments. Close one deal today.</div>
+      </div>
+      <div style="background:#1a1500;border:1px solid #3a2a00;border-left:3px solid #c9a84c;border-radius:3px;padding:12px;margin-bottom:8px;">
+        <div style="font-size:9px;font-weight:800;color:#c9a84c;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Priority #2</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;">BUILD THE SYSTEM</div>
+        <div style="font-size:11px;color:#888;margin-top:3px;">Refine offer. Improve scripts. Build what closes faster.</div>
+      </div>
+      <div style="background:#0a1a0a;border:1px solid #1a3a1a;border-left:3px solid #4caf50;border-radius:3px;padding:12px;">
+        <div style="font-size:9px;font-weight:800;color:#4caf50;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">Priority #3</div>
+        <div style="font-size:16px;font-weight:900;color:#fff;">PROTECT ENERGY</div>
+        <div style="font-size:11px;color:#888;margin-top:3px;">Both workouts. Bible done. 7+ hrs sleep. No junk.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEAD TRACKER / CRM -->
+  <div class="card col-12">
+    <div class="card-hdr">
+      <div class="card-title">Lead Tracker — Personal CRM</div>
+      <div class="badge bg-blue" id="lead-count-badge">0 Leads</div>
+    </div>
+    <div class="lead-form">
+      <input class="lead-input" id="lead-name" type="text" placeholder="Business name *">
+      <input class="lead-input" id="lead-phone" type="tel" placeholder="Phone number">
+      <input class="lead-input" id="lead-notes" type="text" placeholder="Notes / industry">
+      <button class="btn-add" onclick="RC.addLead()">+ Add Lead</button>
+    </div>
+    <div class="lead-list" id="lead-list">
+      <div class="lead-empty" id="lead-empty">No leads yet. Add your first one above.</div>
+    </div>
+  </div>
+
+  <!-- CALL SCRIPTS -->
+  <div class="card col-6">
+    <div class="card-hdr">
+      <div class="card-title">Call Scripts — Use These Verbatim</div>
+      <div class="badge bg-green">Live Reference</div>
+    </div>
+    <div class="script-wrap">
+      <div class="script-box">
+        <div class="script-lbl">Opener</div>
+        <div class="script-text">"Hey, quick question — are you the owner?" [Yes] "Perfect. I'll keep it short, not a sales pitch. I work with [trade] businesses to set up systems that bring in more leads and handle all follow-up automatically. Takes about a week. Would you be open to a 10-minute walkthrough to see if it even makes sense?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-lbl">If They Ask "What Is It?"</div>
+        <div class="script-text">"I build a system that captures every lead from your website, Google, social — responds in under 60 seconds automatically, books them to your calendar, and follows up until they convert. You never lose a job from slow follow-up again. Most clients recoup cost on the first job. Worth 10 minutes?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-lbl">Objection — "I'm Busy"</div>
+        <div class="script-text">"That's exactly why this works for you. I'll send a 2-minute Loom — no call, no commitment. You watch when you have a second and decide from there. Fair?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-lbl">Objection — "Not Interested"</div>
+        <div class="script-text">"Totally fair. Quick question before I let you go — are you happy with how fast your team follows up on new leads right now? Most businesses I talk to are losing 3–5 jobs a week just from slow response. If that's not a problem, you're good. But if it is — this is worth 10 minutes."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CORE OFFER -->
+  <div class="card col-6 offer-card">
+    <div class="card-hdr">
+      <div class="card-title">Rodrigo Advisory — Core Offer</div>
+      <div class="badge bg-gold">Reference</div>
+    </div>
+    <div class="offer-hl">"I build operating systems that handle your lead generation and back-office admin on autopilot — so you focus on the work that makes you money. More jobs, more revenue, less stress."</div>
+    <div class="offer-row">
+      <div class="offer-col">
+        <div class="offer-col-title">What It Does</div>
+        <ul>
+          <li>Captures every lead automatically</li>
+          <li>60-sec SMS/email response</li>
+          <li>Books appointments to your calendar</li>
+          <li>Follows up until they convert</li>
+          <li>CRM tracks every deal</li>
+          <li>Monthly performance reports</li>
+        </ul>
+      </div>
+      <div class="offer-col">
+        <div class="offer-col-title">Pricing</div>
+        <div class="price-line">
+          <div class="price-val">$1,500–$3,000</div>
+          <div class="price-desc">One-time setup fee</div>
+        </div>
+        <div class="price-line">
+          <div class="price-val" style="color:#4caf50;">$400–$900/mo</div>
+          <div class="price-desc">Monthly retainer</div>
+        </div>
+        <div class="price-line">
+          <div style="font-size:13px;font-weight:700;color:#aaa;">Break-even: 1 extra job</div>
+          <div class="price-desc">Most clients recoup cost in Week 1</div>
+        </div>
+        <div style="margin-top:8px;">
+          <div class="offer-col-title">Close Line</div>
+          <div style="font-size:11px;color:#c9a84c;font-style:italic;line-height:1.5;">"Does this make sense to move forward today?"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-l"><span>Rodrigo Advisory</span> — Command Center</div>
+  <div class="footer-r" id="footer-refresh">No auto-reload — local updates only</div>
+</div>
+
+<!-- ── JAVASCRIPT (ES5 STRICT) ── -->
+<script>
+var RC = (function () {
+
+  /* ────────────────── SCHEDULE ────────────────── */
+  var SCHEDULE = [
+    { start: 0,    end: 360,  id: 'sleep',    label: 'Sleep',          name: 'Sleep' },
+    { start: 360,  end: 375,  id: 'wakeup',   label: '6:00 AM',        name: 'Wake Up + Prayer' },
+    { start: 375,  end: 390,  id: 'bible',    label: '6:15 AM',        name: 'Bible' },
+    { start: 390,  end: 420,  id: 'movement', label: '6:30 AM',        name: 'Movement' },
+    { start: 420,  end: 465,  id: 'breakfast',label: '7:00 AM',        name: 'Breakfast + Prep' },
+    { start: 465,  end: 480,  id: 'load',     label: '7:45 AM',        name: 'Load Call List' },
+    { start: 480,  end: 720,  id: 'calls',    label: '8:00–12:00 PM',  name: 'CALL BLOCK' },
+    { start: 720,  end: 750,  id: 'wrap',     label: '12:00 PM',       name: 'Wrap Calls + Log' },
+    { start: 750,  end: 810,  id: 'workout1', label: '12:30 PM',       name: 'Activation Workout' },
+    { start: 810,  end: 840,  id: 'reset',    label: '1:30 PM',        name: 'Recover + Eat' },
+    { start: 840,  end: 960,  id: 'build',    label: '2:00–4:00 PM',   name: 'Build + Follow-Ups' },
+    { start: 960,  end: 990,  id: 'transit2', label: '4:00 PM',        name: 'Prep for Gym' },
+    { start: 990,  end: 1110, id: 'workout2', label: '4:30–6:30 PM',   name: 'Main Gym Session' },
+    { start: 1110, end: 1140, id: 'shower',   label: '6:30 PM',        name: 'Shower + Recover' },
+    { start: 1140, end: 1260, id: 'evening',  label: '7:00–9:00 PM',   name: 'Reset + Planning' },
+    { start: 1260, end: 1320, id: 'sleepprep',label: '9:00 PM',        name: 'Sleep Prep' },
+    { start: 1320, end: 1440, id: 'sleep2',   label: '9:30 PM',        name: 'Sleep' }
+  ];
+
+  /* ────────────────── PHASE INSTRUCTIONS ────────────────── */
+  var INSTR = {
+    sleep: {
+      title: 'Rest Phase',
+      badge: 'Overnight',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Protect your sleep</div><div class="instr-detail">7+ hours minimum. Your calls tomorrow depend on the energy you save tonight.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Call list ready for morning?</div><div class="instr-detail">If not — spend 10 minutes before bed building 20+ target businesses on Google Maps. Wake up loaded.</div></div></div></div>'
+    },
+    wakeup: {
+      title: '6:00 AM — Start Here',
+      badge: 'Morning',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num red">1</div><div><div class="instr-title">Do NOT touch your phone for social media</div><div class="instr-detail">Get up. Feet on the floor. You are starting the day on YOUR terms, not the algorithm\'s.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Say this out loud</div><div class="instr-detail"><strong>"Today I will make 25 calls and book at least 2 appointments. I will follow through."</strong></div></div></div><div class="instr-step"><div class="instr-num">3</div><div><div class="instr-title">Pray — Commit the day</div><div class="instr-detail">Proverbs 16:3. Hand it over. Then get to work.</div></div></div></div>'
+    },
+    bible: {
+      title: '6:15 AM — Bible Time',
+      badge: 'Foundation',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Read Proverbs 16:3 aloud</div><div class="instr-detail">"Commit your works to the Lord, and your plans will be established." This is your operating system verse. Say it every morning.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Read one more chapter</div><div class="instr-detail">Proverbs is 31 chapters. Match today\'s date to the chapter. 10–15 minutes. Start the day in the word.</div></div></div></div>'
+    },
+    movement: {
+      title: '6:30 AM — Morning Movement',
+      badge: 'Energy',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num green">1</div><div><div class="instr-title">20–30 min walk, stretch, or light movement</div><div class="instr-detail">Get the blood moving. This is not a workout — it is nervous system activation. A walk outside is perfect.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">No music. Think about your offer.</div><div class="instr-detail">Rehearse your opener. <strong>"Hey, quick question — are you the owner?"</strong> Say it over and over until it sounds natural.</div></div></div></div>'
+    },
+    breakfast: {
+      title: '7:00 AM — Breakfast + Preparation',
+      badge: 'Fuel Up',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Eat protein. No junk.</div><div class="instr-detail">Eggs, Greek yogurt, oatmeal — real food. You are about to be on the phone for 4 hours. Fuel your brain.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Finalize your call list while eating</div><div class="instr-detail">20+ business names and numbers. Roofing, HVAC, plumbing, electrical, landscaping. If your list is not ready — this is the only thing that matters right now.</div></div></div></div>'
+    },
+    load: {
+      title: '7:45 AM — Final Load-Up',
+      badge: 'Gear Up',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num red">1</div><div><div class="instr-title">20+ businesses with phone numbers — loaded and ready</div><div class="instr-detail">If you do not have this list right now, stop everything and build it. Calls start in 15 minutes.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Say your offer aloud one time</div><div class="instr-detail"><strong>"I build operating systems for businesses that automate lead generation and back-office admin."</strong> Own it. Believe it.</div></div></div><div class="instr-step"><div class="instr-num green">3</div><div><div class="instr-title">Get dressed. Look professional even on phone.</div><div class="instr-detail">How you show up externally affects how you show up internally. Be ready by 7:55.</div></div></div></div>'
+    },
+    calls: {
+      title: 'CALL BLOCK — 8:00 AM to 12:00 PM',
+      badge: 'PRIME TIME',
+      html: '<div class="alert-box"><div class="alert-title">This is the most important block of your day</div><div class="alert-text">You have no clients. The only thing that fixes that is making calls. Stop reading. Start dialing. Come back when you have 5 calls done.</div></div><div class="instr-block"><div class="instr-step"><div class="instr-num red">1</div><div><div class="instr-title">Dial — Do not overthink the opener</div><div class="instr-detail"><strong>"Hey, quick question — are you the owner?"</strong> That is all. When they say yes, keep going. When they say no, ask to be transferred. Do not hang up early.</div></div></div><div class="instr-step"><div class="instr-num red">2</div><div><div class="instr-title">Goal: 25 dials before noon</div><div class="instr-detail">That is 6–7 per hour. Most will not answer. Move on immediately — no voicemails on Day 1. Volume is everything right now.</div></div></div><div class="instr-step"><div class="instr-num">3</div><div><div class="instr-title">Track every call — tap +1 on the scorecard above</div><div class="instr-detail">Calls / Conversations / Appointments. This is your feedback loop. You cannot improve what you do not measure.</div></div></div><div class="instr-step"><div class="instr-num green">4</div><div><div class="instr-title">When you book an appointment</div><div class="instr-detail">Confirm time + method (Zoom/phone). Text immediately: <strong>"Hey [Name], confirming our call at [time]. I\'ll send a link 5 min before. — Rodrigo"</strong></div></div></div><div class="instr-step"><div class="instr-num blue">5</div><div><div class="instr-title">20 rejections = normal. Keep going.</div><div class="instr-detail">In 25 calls you will reach 10+ people. In 10 conversations you will book 1–3 appointments. The math works — if you do the volume.</div></div></div></div>'
+    },
+    wrap: {
+      title: '12:00 PM — Wrap Calls + Log Numbers',
+      badge: 'Log It',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Log your final numbers above</div><div class="instr-detail">How many calls? Conversations? Appointments booked? Be honest. This number tells you what to fix tomorrow.</div></div></div><div class="instr-step"><div class="instr-num green">2</div><div><div class="instr-title">Eat something light — gym is in 30 min</div><div class="instr-detail">Protein. Keep it light. You are training at 12:30. Drink water. Prepare mentally.</div></div></div></div>'
+    },
+    workout1: {
+      title: '12:30 PM — Activation Workout',
+      badge: 'IRON TIME',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num green">1</div><div><div class="instr-title">30–45 min — strength or bodyweight</div><div class="instr-detail">This is your midday activation. Pushups, pull-ups, light lifts, kettlebells. Purpose: reset your nervous system and energize the afternoon block.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">No phone during sets</div><div class="instr-detail">You get 45 minutes completely offline. The leads will still be there. Show up in the gym completely.</div></div></div><div class="instr-step"><div class="instr-num blue">3</div><div><div class="instr-title">Visualize while training</div><div class="instr-detail">See yourself on a call this afternoon closing a client. See the first payment. Use this time to program your mind, not just your body.</div></div></div></div>'
+    },
+    reset: {
+      title: '1:30 PM — Recover + Eat',
+      badge: 'Recharge',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num green">1</div><div><div class="instr-title">Protein + water immediately</div><div class="instr-detail">Recover fast. Real food. 15–20 minutes. You need to be sharp for the afternoon block.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Check booked appointments</div><div class="instr-detail">Any calls from this morning? Confirm them. Send reminder texts. Review your offer one more time before getting on those calls.</div></div></div></div>'
+    },
+    build: {
+      title: '2:00–4:00 PM — Build + Follow-Up Block',
+      badge: 'EXECUTE',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num blue">1</div><div><div class="instr-title">Run your booked appointments</div><div class="instr-detail">Screen share. Walk them through the system. Show the problem first, then the solution. Price with confidence: <strong>$1,500–$2,500 setup + $400–$900/mo.</strong> Ask for the close: "Does this make sense to move forward today?"</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">Send 10 follow-up texts</div><div class="instr-detail">Everyone who didn\'t answer this morning. Text: <strong>"Hey [Name] — tried you earlier. Quick 10 min this week?"</strong> Simple. No pressure.</div></div></div><div class="instr-step"><div class="instr-num green">3</div><div><div class="instr-title">Post 1 piece of content</div><div class="instr-detail">Instagram Reel or LinkedIn. Topic: <strong>"Why your business loses jobs after 5pm."</strong> Film on phone. 60 seconds. Done beats perfect.</div></div></div><div class="instr-step"><div class="instr-num">4</div><div><div class="instr-title">Improve your offer or demo</div><div class="instr-detail">What objections came up today? Refine your script. Build the asset that closes the next prospect faster.</div></div></div></div>'
+    },
+    transit2: {
+      title: '4:00 PM — Prep for Main Gym',
+      badge: 'Transition',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Wrap your work session</div><div class="instr-detail">Log follow-ups. Save any open tasks. Close your browser tabs. Transition mentally — the next 2.5 hours are for your body.</div></div></div><div class="instr-step"><div class="instr-num green">2</div><div><div class="instr-title">Pre-workout fuel if needed</div><div class="instr-detail">Light snack. Water. You are about to do 90 minutes of serious lifting.</div></div></div></div>'
+    },
+    workout2: {
+      title: '4:30–6:30 PM — Main Gym Session',
+      badge: 'MAIN LIFT',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num green">1</div><div><div class="instr-title">60–90 minutes — compound lifts</div><div class="instr-detail">Bench / Squat / Deadlift / Overhead Press / Rows. Push yourself. This is where the real work gets done. Full effort, every set.</div></div></div><div class="instr-step"><div class="instr-num">2</div><div><div class="instr-title">No social media in the gym</div><div class="instr-detail">Music or silence only. No scrolling between sets. You are here to build something that reflects your discipline.</div></div></div><div class="instr-step"><div class="instr-num blue">3</div><div><div class="instr-title">Leave it all in the gym</div><div class="instr-detail">The body you are building is the physical proof that you do what you say. Treat it that way.</div></div></div></div>'
+    },
+    shower: {
+      title: '6:30 PM — Shower + Recovery',
+      badge: 'Wind Down',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Shower. Eat. Recover.</div><div class="instr-detail">Real meal. Protein and carbs. You earned it. Hydrate. Let the body rebuild.</div></div></div></div>'
+    },
+    evening: {
+      title: '7:00–9:00 PM — Reset + Planning',
+      badge: 'Debrief',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Log final numbers for the day</div><div class="instr-detail">Calls / Conversations / Appointments / Content / Follow-Ups. Be honest. Compare to goal. Identify one thing to improve tomorrow.</div></div></div><div class="instr-step"><div class="instr-num green">2</div><div><div class="instr-title">Build tomorrow\'s call list — 20 businesses</div><div class="instr-detail">Google Maps. New businesses you have not called. Get numbers. Name the owner if you can. Load up before you sleep.</div></div></div><div class="instr-step"><div class="instr-num blue">3</div><div><div class="instr-title">Send any final follow-up texts</div><div class="instr-detail">Warm leads from today. Simple: "Hey — just checking in. Worth a 10-min call this week?"</div></div></div><div class="instr-step"><div class="instr-num">4</div><div><div class="instr-title">Read. Pray. Decompress.</div><div class="instr-detail">No business content after 9pm. Close the loop with God on the day. Prepare your mind for sleep.</div></div></div></div>'
+    },
+    sleepprep: {
+      title: '9:00 PM — Sleep Preparation',
+      badge: 'Wind Down',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Phone down by 9:30 PM</div><div class="instr-detail">No social media. No YouTube. No news. Your brain needs 30 minutes to decompress before sleep. Protect this.</div></div></div><div class="instr-step"><div class="instr-num blue">2</div><div><div class="instr-title">Review: Did you do what you said?</div><div class="instr-detail">Checklist complete? Metrics logged? If not — no guilt. Just commitment: tomorrow you execute fully. Say it out loud.</div></div></div></div>'
+    },
+    sleep2: {
+      title: '9:30 PM — Sleep',
+      badge: 'Rest',
+      html: '<div class="instr-block"><div class="instr-step"><div class="instr-num">1</div><div><div class="instr-title">Protect your 7+ hours</div><div class="instr-detail">Sleep is when your body rebuilds and your mind consolidates the day. Tomorrow\'s calls depend on tonight\'s rest. Go to sleep.</div></div></div></div>'
+    }
+  };
+
+  /* ────────────────── NEXT ACTION TEXT ────────────────── */
+  var NEXT_ACTIONS = [
+    { start: 0,    end: 355,  text: 'You should be asleep. Protect your rest. Calls start at 8 AM.' },
+    { start: 355,  end: 375,  text: 'Wake up. Feet on the floor. Do NOT touch social media. Start with prayer.' },
+    { start: 375,  end: 390,  text: 'Open your Bible. Read Proverbs 16:3 aloud. Then read today\'s chapter.' },
+    { start: 390,  end: 420,  text: 'Go for a 20-minute walk. Rehearse your opener while you walk: "Hey, quick question — are you the owner?"' },
+    { start: 420,  end: 460,  text: 'Eat a real breakfast. While eating: find 20 businesses on Google Maps and get their phone numbers.' },
+    { start: 460,  end: 480,  text: 'Call list ready? 20+ businesses with phone numbers? Get dressed. Calls start in 15 minutes.' },
+    { start: 480,  end: 600,  text: 'DIAL. Pick up the phone and call the first business on your list. "Hey, quick question — are you the owner?"' },
+    { start: 600,  end: 660,  text: 'Keep dialing. You need 25 calls by noon. How many have you made? Check your scorecard and keep going.' },
+    { start: 660,  end: 720,  text: 'Final push before noon. Every call counts. If you haven\'t hit 25 — do not stop until you do.' },
+    { start: 720,  end: 750,  text: 'Log your morning numbers. How many calls, conversations, appointments? Be honest. Prep for workout.' },
+    { start: 750,  end: 810,  text: 'Activation workout — 30–45 minutes. No phone during sets. Move your body, reset your mind.' },
+    { start: 810,  end: 840,  text: 'Eat protein. Drink water. Check your booked appointments for this afternoon and confirm them.' },
+    { start: 840,  end: 960,  text: 'Run your booked appointments. Send 10 follow-up texts. Post one piece of content. Refine your offer.' },
+    { start: 960,  end: 990,  text: 'Wrap your work session. Prep mentally for the gym. Close all business tabs.' },
+    { start: 990,  end: 1110, text: 'You are in the gym. Full effort on compound lifts. 60–90 minutes. No scrolling. Leave it all there.' },
+    { start: 1110, end: 1140, text: 'Shower. Eat a real meal. Recover. You have earned this.' },
+    { start: 1140, end: 1260, text: 'Log final numbers. Build tomorrow\'s call list (20 new businesses). Send final follow-up texts.' },
+    { start: 1260, end: 1320, text: 'Wind down. No social media. Pray. Review what you accomplished today. Phone down by 9:30.' },
+    { start: 1320, end: 1440, text: 'Sleep. 7+ hours. Tomorrow\'s calls depend on tonight\'s rest. Go to sleep.' }
+  ];
+
+  /* ────────────────── HELPERS ────────────────── */
+  var DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  function minutesNow() {
+    var d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function getById(id) { return document.getElementById(id); }
+
+  function safeJSON(str, fallback) {
+    try { return JSON.parse(str); } catch (e) { return fallback; }
+  }
+
+  /* ────────────────── LOCAL STORAGE KEYS ────────────────── */
+  var KEY_METRICS   = 'rc_metrics_v2';
+  var KEY_CHECKLIST = 'rc_checklist_v2';
+  var KEY_LEADS     = 'rc_leads_v2';
+
+  /* ────────────────── METRICS ────────────────── */
+  var DEFAULT_METRICS = { calls:0, convos:0, appts:0, dms:0, followups:0, content:0, clients:0, revenue:0, date:'' };
+
+  function loadMetrics() {
+    var stored = safeJSON(localStorage.getItem(KEY_METRICS), null);
+    if (!stored || stored.date !== todayStr()) {
+      stored = { calls:0, convos:0, appts:0, dms:0, followups:0, content:0, clients:0, revenue:0, date:todayStr() };
+      saveMetrics(stored);
+    }
+    return stored;
+  }
+
+  function saveMetrics(m) {
+    localStorage.setItem(KEY_METRICS, JSON.stringify(m));
+  }
+
+  function renderMetrics(m) {
+    var el;
+    el = getById('mv-calls');     if (el) el.innerHTML = m.calls;
+    el = getById('mv-convos');    if (el) el.innerHTML = m.convos;
+    el = getById('mv-appts');     if (el) el.innerHTML = m.appts;
+    el = getById('mv-dms');       if (el) el.innerHTML = m.dms;
+    el = getById('mv-followups'); if (el) el.innerHTML = m.followups;
+    el = getById('mv-content');   if (el) el.innerHTML = m.content;
+    el = getById('mv-clients');   if (el) el.innerHTML = m.clients;
+    el = getById('mv-revenue');   if (el) el.innerHTML = '$' + (m.revenue || 0);
+    var ri = getById('revenue-input');
+    if (ri && !ri.value) ri.value = m.revenue || 0;
+  }
+
+  function inc(key) {
+    var m = loadMetrics();
+    m[key] = (m[key] || 0) + 1;
+    saveMetrics(m);
+    renderMetrics(m);
+    checkAlerts(m);
+  }
+
+  function dec(key) {
+    var m = loadMetrics();
+    m[key] = Math.max(0, (m[key] || 0) - 1);
+    saveMetrics(m);
+    renderMetrics(m);
+  }
+
+  function setRevenue(val) {
+    var m = loadMetrics();
+    m.revenue = parseInt(val, 10) || 0;
+    saveMetrics(m);
+    var el = getById('mv-revenue');
+    if (el) el.innerHTML = '$' + m.revenue;
+  }
+
+  /* ────────────────── CHECKLIST ────────────────── */
+  var DEFAULT_CL = { bible:false, movement:false, ready:false, calls25:false, dms20:false, workout1:false, followups10:false, content1:false, workout2:false };
+
+  function loadChecklist() {
+    var stored = safeJSON(localStorage.getItem(KEY_CHECKLIST), null);
+    if (!stored || stored._date !== todayStr()) {
+      stored = { bible:false, movement:false, ready:false, calls25:false, dms20:false, workout1:false, followups10:false, content1:false, workout2:false, _date:todayStr() };
+      saveChecklist(stored);
+    }
+    return stored;
+  }
+
+  function saveChecklist(cl) {
+    localStorage.setItem(KEY_CHECKLIST, JSON.stringify(cl));
+  }
+
+  function renderChecklist(cl) {
+    var keys = ['bible','movement','ready','calls25','dms20','workout1','followups10','content1','workout2'];
+    var done = 0;
+    var i, key, box, item;
+    for (i = 0; i < keys.length; i++) {
+      key = keys[i];
+      box  = getById('cl-' + key);
+      item = box ? box.parentNode : null;
+      if (cl[key]) {
+        done++;
+        if (box)  box.className  = 'cl-box done';
+        if (item) item.className = 'cl-item done-item';
+      } else {
+        if (box)  box.className  = 'cl-box';
+        if (item) item.className = 'cl-item';
+      }
+    }
+    var badge = getById('cl-progress-badge');
+    if (badge) {
+      badge.innerHTML = done + ' / ' + keys.length;
+      badge.className = done === keys.length ? 'badge bg-green' : 'badge bg-gold';
+    }
+  }
+
+  function toggleCheck(key) {
+    var cl = loadChecklist();
+    cl[key] = !cl[key];
+    saveChecklist(cl);
+    renderChecklist(cl);
+  }
+
+  /* ────────────────── LEADS ────────────────── */
+  function loadLeads() {
+    return safeJSON(localStorage.getItem(KEY_LEADS), []);
+  }
+
+  function saveLeads(leads) {
+    localStorage.setItem(KEY_LEADS, JSON.stringify(leads));
+  }
+
+  function renderLeads() {
+    var leads = loadLeads();
+    var list  = getById('lead-list');
+    var empty = getById('lead-empty');
+    var badge = getById('lead-count-badge');
+    if (!list) return;
+
+    if (badge) {
+      badge.innerHTML = leads.length + ' Lead' + (leads.length !== 1 ? 's' : '');
+    }
+
+    if (leads.length === 0) {
+      if (empty) empty.style.display = 'block';
+      var existingItems = list.querySelectorAll('.lead-item');
+      var j;
+      for (j = 0; j < existingItems.length; j++) {
+        list.removeChild(existingItems[j]);
+      }
+      return;
+    }
+
+    if (empty) empty.style.display = 'none';
+
+    /* rebuild list */
+    list.innerHTML = '';
+    var i, lead, item, main, nameDiv, phoneDiv, notesDiv, actions, calledBtn, fuBtn, delBtn;
+    for (i = 0; i < leads.length; i++) {
+      lead = leads[i];
+      item = document.createElement('div');
+      item.className = 'lead-item';
+
+      main = document.createElement('div');
+      main.className = 'lead-main';
+
+      nameDiv = document.createElement('div');
+      nameDiv.className = 'lead-name';
+      nameDiv.innerHTML = lead.name || 'Unknown';
+
+      phoneDiv = document.createElement('div');
+      phoneDiv.className = 'lead-phone';
+      phoneDiv.innerHTML = lead.phone || '—';
+
+      notesDiv = document.createElement('div');
+      notesDiv.className = 'lead-notes';
+      notesDiv.innerHTML = lead.notes || '';
+
+      main.appendChild(nameDiv);
+      main.appendChild(phoneDiv);
+      if (lead.notes) main.appendChild(notesDiv);
+
+      actions = document.createElement('div');
+      actions.className = 'lead-actions';
+
+      calledBtn = document.createElement('button');
+      calledBtn.className = 'ltag ltag-called' + (lead.called ? '' : ' off');
+      calledBtn.innerHTML = lead.called ? 'Called ✓' : 'Called';
+      (function (idx) {
+        calledBtn.onclick = function () { RC.toggleLeadCalled(idx); };
+      })(i);
+
+      fuBtn = document.createElement('button');
+      fuBtn.className = 'ltag ltag-followup' + (lead.followup ? '' : ' off');
+      fuBtn.innerHTML = lead.followup ? 'Follow-Up ✓' : 'Follow-Up';
+      (function (idx) {
+        fuBtn.onclick = function () { RC.toggleLeadFollowup(idx); };
+      })(i);
+
+      delBtn = document.createElement('button');
+      delBtn.className = 'ltag ltag-del';
+      delBtn.innerHTML = '✕';
+      (function (idx) {
+        delBtn.onclick = function () { RC.deleteLead(idx); };
+      })(i);
+
+      actions.appendChild(calledBtn);
+      actions.appendChild(fuBtn);
+      actions.appendChild(delBtn);
+
+      item.appendChild(main);
+      item.appendChild(actions);
+      list.appendChild(item);
+    }
+  }
+
+  function addLead() {
+    var nameEl  = getById('lead-name');
+    var phoneEl = getById('lead-phone');
+    var notesEl = getById('lead-notes');
+    var name = nameEl ? nameEl.value.trim() : '';
+    if (!name) {
+      if (nameEl) { nameEl.style.borderColor = '#f44336'; setTimeout(function () { nameEl.style.borderColor = '#2a2a2a'; }, 1500); }
+      return;
+    }
+    var leads = loadLeads();
+    leads.unshift({
+      id:       Date.now(),
+      name:     name,
+      phone:    phoneEl  ? phoneEl.value.trim()  : '',
+      notes:    notesEl  ? notesEl.value.trim()  : '',
+      called:   false,
+      followup: false,
+      date:     todayStr()
+    });
+    saveLeads(leads);
+    if (nameEl)  nameEl.value  = '';
+    if (phoneEl) phoneEl.value = '';
+    if (notesEl) notesEl.value = '';
+    renderLeads();
+  }
+
+  function toggleLeadCalled(idx) {
+    var leads = loadLeads();
+    if (leads[idx]) { leads[idx].called = !leads[idx].called; saveLeads(leads); renderLeads(); }
+  }
+
+  function toggleLeadFollowup(idx) {
+    var leads = loadLeads();
+    if (leads[idx]) { leads[idx].followup = !leads[idx].followup; saveLeads(leads); renderLeads(); }
+  }
+
+  function deleteLead(idx) {
+    var leads = loadLeads();
+    leads.splice(idx, 1);
+    saveLeads(leads);
+    renderLeads();
+  }
+
+  /* ────────────────── CLOCK ────────────────── */
+  function updateClock() {
+    var now = new Date();
+    var h = pad(now.getHours());
+    var m = pad(now.getMinutes());
+    var s = pad(now.getSeconds());
+    var el = getById('live-clock');
+    if (el) el.innerHTML = h + ':' + m + ':' + s;
+    var dateEl = getById('live-date');
+    if (dateEl) dateEl.innerHTML = DAYS[now.getDay()] + ', ' + MONTHS[now.getMonth()] + ' ' + now.getDate();
+  }
+
+  /* ────────────────── TIMELINE ────────────────── */
+  function buildTimeline() {
+    var container = getById('timeline');
+    if (!container) return;
+    var mn = minutesNow();
+    var i, block, div, timeDiv, nameDiv;
+    container.innerHTML = '';
+    for (i = 0; i < SCHEDULE.length; i++) {
+      block = SCHEDULE[i];
+      div = document.createElement('div');
+      div.className = 'tl-block';
+      if (mn >= block.start && mn < block.end) {
+        div.className += ' current';
+      } else if (mn >= block.end) {
+        div.className += ' done';
+      }
+      timeDiv = document.createElement('div');
+      timeDiv.className = 'tl-time';
+      timeDiv.innerHTML = block.label;
+      nameDiv = document.createElement('div');
+      nameDiv.className = 'tl-name';
+      nameDiv.innerHTML = block.name;
+      div.appendChild(timeDiv);
+      div.appendChild(nameDiv);
+      container.appendChild(div);
+    }
+    /* scroll current into view */
+    var currentEl = container.querySelector('.tl-block.current');
+    if (currentEl) {
+      var wrapper = container.parentNode;
+      wrapper.scrollLeft = currentEl.offsetLeft - 20;
+    }
+  }
+
+  /* ────────────────── PHASE INSTRUCTIONS ────────────────── */
+  function getCurrentBlock() {
+    var mn = minutesNow();
+    var i;
+    for (i = 0; i < SCHEDULE.length; i++) {
+      if (mn >= SCHEDULE[i].start && mn < SCHEDULE[i].end) return SCHEDULE[i];
+    }
+    return SCHEDULE[SCHEDULE.length - 1];
+  }
+
+  function updatePhase() {
+    var block  = getCurrentBlock();
+    var instr  = INSTR[block.id];
+    var titleEl = getById('phase-card-title');
+    var badgeEl = getById('phase-card-badge');
+    var detailEl= getById('phase-instructions');
+    if (instr) {
+      if (titleEl)  titleEl.innerHTML  = instr.title;
+      if (badgeEl)  badgeEl.innerHTML  = instr.badge;
+      if (detailEl) detailEl.innerHTML = instr.html;
+    }
+  }
+
+  /* ────────────────── NEXT ACTION ────────────────── */
+  function updateNextAction() {
+    var mn  = minutesNow();
+    var el  = getById('do-now-text');
+    if (!el) return;
+    var i, na;
+    for (i = 0; i < NEXT_ACTIONS.length; i++) {
+      na = NEXT_ACTIONS[i];
+      if (mn >= na.start && mn < na.end) {
+        el.innerHTML = na.text;
+        return;
+      }
+    }
+    el.innerHTML = 'Stay focused. Follow the schedule.';
+  }
+
+  /* ────────────────── FOCUS ALERTS ────────────────── */
+  function checkAlerts(m) {
+    var mn     = minutesNow();
+    var banner = getById('focus-alert');
+    var text   = getById('focus-alert-text');
+    if (!banner) return;
+    m = m || loadMetrics();
+
+    /* Behind on calls: after 10am, calls < 10 */
+    if (mn >= 600 && mn < 720 && m.calls < 10) {
+      banner.style.display = 'block';
+      if (text) text.innerHTML = 'YOU ARE BEHIND ON CALLS — ' + m.calls + ' made, need 10+ by 10 AM. DIAL NOW.';
+      return;
+    }
+    /* No appointments by 11am */
+    if (mn >= 660 && mn < 720 && m.appts === 0) {
+      banner.style.display = 'block';
+      if (text) text.innerHTML = 'NO APPOINTMENTS BOOKED YET — Push harder on the next 10 calls. ASK FOR THE MEETING.';
+      return;
+    }
+    /* Behind on calls: after 12pm, calls < 20 */
+    if (mn >= 720 && mn < 840 && m.calls < 20) {
+      banner.style.display = 'block';
+      if (text) text.innerHTML = 'ONLY ' + m.calls + ' CALLS MADE — You needed 25. Add extra calls after the afternoon block.';
+      return;
+    }
+    banner.style.display = 'none';
+  }
+
+  /* ────────────────── DAY RESET ────────────────── */
+  function resetDay() {
+    if (!window.confirm('Reset all metrics and checklist for today? Leads will be kept.')) return;
+    var blank = { calls:0, convos:0, appts:0, dms:0, followups:0, content:0, clients:0, revenue:0, date:todayStr() };
+    saveMetrics(blank);
+    renderMetrics(blank);
+    var blankCl = { bible:false, movement:false, ready:false, calls25:false, dms20:false, workout1:false, followups10:false, content1:false, workout2:false, _date:todayStr() };
+    saveChecklist(blankCl);
+    renderChecklist(blankCl);
+    checkAlerts(blank);
+    var ri = getById('revenue-input');
+    if (ri) ri.value = 0;
+  }
+
+  /* ────────────────── INIT ────────────────── */
+  function init() {
+    updateClock();
+    buildTimeline();
+    updatePhase();
+    updateNextAction();
+    var m  = loadMetrics();
+    var cl = loadChecklist();
+    renderMetrics(m);
+    renderChecklist(cl);
+    renderLeads();
+    checkAlerts(m);
+
+    /* clock — every second */
+    setInterval(updateClock, 1000);
+
+    /* phase + timeline + alerts — every 60 seconds */
+    setInterval(function () {
+      buildTimeline();
+      updatePhase();
+      updateNextAction();
+      checkAlerts(loadMetrics());
+    }, 60000);
+  }
+
+  /* ────────────────── PUBLIC API ────────────────── */
+  return {
+    inc:                inc,
+    dec:                dec,
+    setRevenue:         setRevenue,
+    toggleCheck:        toggleCheck,
+    addLead:            addLead,
+    toggleLeadCalled:   toggleLeadCalled,
+    toggleLeadFollowup: toggleLeadFollowup,
+    deleteLead:         deleteLead,
+    resetDay:           resetDay,
+    init:               init
+  };
+
+}());
+
+RC.init();
+</script>
+</body>
+</html>
