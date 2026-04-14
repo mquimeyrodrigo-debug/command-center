@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="10">
+<title>RODRIGO — COMMAND CENTER</title>
+<style>
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  background: #080808;
+  color: #f0f0f0;
+  font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 100%;
+}
+
+/* ── HEADER ── */
+.hdr {
+  background: #0d0d0d;
+  border-bottom: 2px solid #c9a84c;
+  padding: 12px 18px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hdr-left {}
+.hdr-name {
+  font-size: 18px;
+  font-weight: 900;
+  color: #c9a84c;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.hdr-sub {
+  font-size: 10px;
+  color: #555;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+.hdr-center {
+  text-align: center;
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
+  padding: 0 12px;
+}
+.hdr-verse {
+  font-size: 11px;
+  color: #c9a84c;
+  font-style: italic;
+  line-height: 1.5;
+}
+.hdr-verse-ref {
+  font-size: 10px;
+  color: #666;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
+}
+.hdr-right {
+  text-align: right;
+}
+#live-clock {
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+#live-date {
+  font-size: 10px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+#last-updated {
+  font-size: 9px;
+  color: #333;
+  margin-top: 2px;
+}
+
+/* ── PHASE BANNER ── */
+#phase-banner {
+  padding: 14px 18px;
+  border-bottom: 1px solid #222;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+#phase-label {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+#phase-desc {
+  font-size: 12px;
+  color: #888;
+  margin-top: 3px;
+  letter-spacing: 0.5px;
+}
+#phase-timer {
+  font-size: 12px;
+  color: #555;
+  text-align: right;
+}
+#phase-next {
+  font-size: 11px;
+  color: #c9a84c;
+  margin-top: 2px;
+}
+
+/* ── GRID ── */
+.grid {
+  padding: 14px 18px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.col-12 { width: 100%; }
+.col-8  { width: calc(66.666% - 6px); }
+.col-6  { width: calc(50% - 6px); }
+.col-4  { width: calc(33.333% - 8px); }
+.col-3  { width: calc(25% - 9px); }
+
+@media (max-width: 900px) {
+  .col-8  { width: 100%; }
+  .col-4  { width: calc(50% - 6px); }
+  .col-3  { width: calc(50% - 6px); }
+}
+@media (max-width: 600px) {
+  .col-6, .col-4, .col-3 { width: 100%; }
+}
+
+/* ── CARD ── */
+.card {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.card-hdr {
+  background: #161616;
+  border-bottom: 1px solid #222;
+  padding: 9px 14px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+.card-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.card-badge {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-gold   { background: #2a1f00; color: #c9a84c; }
+.badge-green  { background: #0f2010; color: #4caf50; }
+.badge-red    { background: #2a0f0f; color: #f44336; }
+.badge-blue   { background: #0f1a2a; color: #42a5f5; }
+.badge-white  { background: #1e1e1e; color: #aaa; }
+
+/* ── KPI METRICS ── */
+.kpi-row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+.kpi-box {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 80px;
+  flex: 1 1 80px;
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 3px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.kpi-val {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  color: #c9a84c;
+}
+.kpi-val.green  { color: #4caf50; }
+.kpi-val.blue   { color: #42a5f5; }
+.kpi-val.red    { color: #f44336; }
+.kpi-val.white  { color: #ffffff; }
+.kpi-lbl {
+  font-size: 9px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-top: 5px;
+}
+.kpi-sub {
+  font-size: 9px;
+  color: #333;
+  margin-top: 2px;
+}
+
+/* ── INSTRUCTION BLOCK ── */
+.instr-block {
+  padding: 14px;
+}
+.instr-step {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #181818;
+  -webkit-box-align: flex-start;
+  -ms-flex-align: flex-start;
+  align-items: flex-start;
+}
+.instr-step:last-child { border-bottom: none; }
+.instr-num {
+  width: 24px;
+  height: 24px;
+  background: #c9a84c;
+  color: #000;
+  font-size: 11px;
+  font-weight: 900;
+  border-radius: 3px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.instr-num.blue   { background: #42a5f5; }
+.instr-num.green  { background: #4caf50; }
+.instr-num.red    { background: #f44336; }
+.instr-body {}
+.instr-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #eee;
+  line-height: 1.3;
+}
+.instr-detail {
+  font-size: 11px;
+  color: #777;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.instr-detail strong { color: #c9a84c; font-weight: 700; }
+
+/* ── SCRIPT BOX ── */
+.script-wrap {
+  padding: 0 14px 14px;
+}
+.script-box {
+  background: #0d1a0d;
+  border: 1px solid #1a3a1a;
+  border-left: 3px solid #4caf50;
+  border-radius: 3px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.script-box:last-child { margin-bottom: 0; }
+.script-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #4caf50;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+.script-text {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.65;
+  font-style: italic;
+}
+.script-box.gold-box {
+  background: #1a1500;
+  border-color: #3a2e00;
+  border-left-color: #c9a84c;
+}
+.script-box.gold-box .script-label { color: #c9a84c; }
+
+/* ── PRIORITY LIST ── */
+.priority-list {
+  list-style: none;
+  padding: 14px;
+}
+.priority-item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #181818;
+}
+.priority-item:last-child { border-bottom: none; }
+.priority-rank {
+  font-size: 22px;
+  font-weight: 900;
+  color: #c9a84c;
+  width: 30px;
+  text-align: center;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+.priority-rank.faded { color: #333; }
+.priority-body {}
+.priority-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #eee;
+}
+.priority-sub {
+  font-size: 11px;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* ── PROGRESS BAR ── */
+.prog-block {
+  padding: 14px;
+}
+.prog-row {
+  margin-bottom: 10px;
+}
+.prog-row:last-child { margin-bottom: 0; }
+.prog-meta {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.prog-lbl  { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; }
+.prog-val  { font-size: 11px; font-weight: 700; color: #c9a84c; }
+.prog-bg   { height: 5px; background: #1e1e1e; border-radius: 3px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 3px; background: #c9a84c; }
+.prog-fill.blue  { background: #42a5f5; }
+.prog-fill.green { background: #4caf50; }
+
+/* ── PERSONAL / HABIT TRACKER ── */
+.habit-grid {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+}
+.habit-box {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 90px;
+  flex: 1 1 90px;
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 3px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.habit-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+.habit-lbl {
+  font-size: 9px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+.habit-status {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.status-yes  { color: #4caf50; }
+.status-no   { color: #f44336; }
+.status-open { color: #c9a84c; }
+
+/* ── PHASE-SPECIFIC INSTRUCTION PANEL ── */
+#phase-detail {
+  padding: 0;
+}
+
+/* ── OFFER SECTION ── */
+.offer-section {
+  border: 2px solid #c9a84c;
+  background: #0a0a0a;
+}
+.offer-section .card-hdr {
+  background: #120e00;
+  border-bottom: 1px solid #c9a84c;
+}
+.offer-section .card-title {
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+.offer-body {
+  padding: 14px;
+}
+.offer-headline {
+  font-size: 15px;
+  font-weight: 700;
+  color: #c9a84c;
+  line-height: 1.5;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #1e1e1e;
+  margin-bottom: 12px;
+}
+.offer-cols {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.offer-col {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 1 220px;
+  flex: 1 1 220px;
+}
+.offer-col-title {
+  font-size: 9px;
+  font-weight: 800;
+  color: #c9a84c;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+/* ── ALERT BOX ── */
+.alert-box {
+  margin: 0 14px 14px;
+  background: #1a0a00;
+  border: 1px solid #3a1800;
+  border-left: 3px solid #f57c00;
+  border-radius: 3px;
+  padding: 10px 12px;
+}
+.alert-title {
+  font-size: 10px;
+  font-weight: 800;
+  color: #f57c00;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+.alert-text {
+  font-size: 12px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+.footer {
+  background: #0a0a0a;
+  border-top: 1px solid #181818;
+  padding: 8px 18px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.footer-left  { font-size: 10px; color: #333; letter-spacing: 1px; }
+.footer-left span { color: #c9a84c; }
+.footer-right { font-size: 9px; color: #2a2a2a; }
+
+/* ── DIVIDER ── */
+.section-div {
+  width: 100%;
+  height: 0;
+  margin: 0;
+}
+
+/* no extra scrollbar styling needed for old iOS */
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-name">Rodrigo Advisory</div>
+    <div class="hdr-sub">Day 1 — Execution Command Center</div>
+  </div>
+  <div class="hdr-center">
+    <div class="hdr-verse">"Commit your works to the Lord, and your plans will be established."</div>
+    <div class="hdr-verse-ref">Proverbs 16:3 (NASB)</div>
+  </div>
+  <div class="hdr-right">
+    <div id="live-clock">--:--:--</div>
+    <div id="live-date">Loading...</div>
+    <div id="last-updated">Refresh: --</div>
+  </div>
+</div>
+
+<!-- ===================== PHASE BANNER ===================== -->
+<div id="phase-banner">
+  <div>
+    <div id="phase-label">Loading Phase...</div>
+    <div id="phase-desc">Determining your current execution block</div>
+  </div>
+  <div id="phase-timer">
+    <div id="phase-time-remaining">--</div>
+    <div id="phase-next">Next: --</div>
+  </div>
+</div>
+
+<!-- ===================== GRID START ===================== -->
+<div class="grid">
+
+  <!-- ===== TODAY'S METRICS (START AT 0) ===== -->
+  <div class="card col-12">
+    <div class="card-hdr">
+      <div class="card-title">Today's Scorecard — Day 1</div>
+      <div class="card-badge badge-red">All Zeros — Go Win</div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-box">
+        <div class="kpi-val" id="m-calls">0</div>
+        <div class="kpi-lbl">Calls Made</div>
+        <div class="kpi-sub">Goal: 25</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val blue" id="m-convos">0</div>
+        <div class="kpi-lbl">Conversations</div>
+        <div class="kpi-sub">Goal: 10</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val green" id="m-appts">0</div>
+        <div class="kpi-lbl">Appointments</div>
+        <div class="kpi-sub">Goal: 2–5</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" id="m-dms">0</div>
+        <div class="kpi-lbl">DMs / Outreach</div>
+        <div class="kpi-sub">Goal: 20</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val blue" id="m-followups">0</div>
+        <div class="kpi-lbl">Follow-Ups</div>
+        <div class="kpi-sub">Goal: 10</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val green" id="m-content">0</div>
+        <div class="kpi-lbl">Content Posted</div>
+        <div class="kpi-sub">Goal: 1</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val red" id="m-clients">0</div>
+        <div class="kpi-lbl">Clients Signed</div>
+        <div class="kpi-sub">Goal: 1 today</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val white" id="m-revenue">$0</div>
+        <div class="kpi-lbl">Revenue</div>
+        <div class="kpi-sub">Goal: $1,500+</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TODAY'S PRIORITIES ===== -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Today's Priorities</div>
+      <div class="card-badge badge-red">Non-Negotiable</div>
+    </div>
+    <ul class="priority-list">
+      <li class="priority-item">
+        <div class="priority-rank">1</div>
+        <div class="priority-body">
+          <div class="priority-title">GET CLIENTS</div>
+          <div class="priority-sub">25+ calls. Book 2–5 appointments. Close one deal.</div>
+        </div>
+      </li>
+      <li class="priority-item">
+        <div class="priority-rank">2</div>
+        <div class="priority-body">
+          <div class="priority-title">BUILD THE SYSTEM</div>
+          <div class="priority-sub">Improve offer, refine scripts, build your process.</div>
+        </div>
+      </li>
+      <li class="priority-item">
+        <div class="priority-rank">3</div>
+        <div class="priority-body">
+          <div class="priority-title">PROTECT YOUR ENERGY</div>
+          <div class="priority-sub">Workout at 12:30. Bible done. Sleep 7+ hrs.</div>
+        </div>
+      </li>
+      <li class="priority-item">
+        <div class="priority-rank faded">—</div>
+        <div class="priority-body">
+          <div class="priority-title" style="color:#333;">Everything Else</div>
+          <div class="priority-sub">Secondary. Do not confuse activity with progress.</div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ===== PERSONAL / HABITS ===== -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Personal Alignment</div>
+      <div class="card-badge badge-white">Daily</div>
+    </div>
+    <div class="habit-grid">
+      <div class="habit-box">
+        <div class="habit-icon">📖</div>
+        <div class="habit-lbl">Bible</div>
+        <div class="habit-status status-yes">DONE</div>
+      </div>
+      <div class="habit-box">
+        <div class="habit-icon">🙏</div>
+        <div class="habit-lbl">Prayer</div>
+        <div class="habit-status status-open">PENDING</div>
+      </div>
+      <div class="habit-box">
+        <div class="habit-icon">🏋️</div>
+        <div class="habit-lbl">Workout</div>
+        <div class="habit-status status-no">NOT YET</div>
+      </div>
+      <div class="habit-box">
+        <div class="habit-icon">💧</div>
+        <div class="habit-lbl">Hydration</div>
+        <div class="habit-status status-open">TRACK</div>
+      </div>
+      <div class="habit-box">
+        <div class="habit-icon">🧘</div>
+        <div class="habit-lbl">Focus</div>
+        <div class="habit-status status-open">ON</div>
+      </div>
+      <div class="habit-box">
+        <div class="habit-icon">📋</div>
+        <div class="habit-lbl">Plan Reviewed</div>
+        <div class="habit-status status-yes">YES</div>
+      </div>
+    </div>
+    <div style="padding: 0 12px 12px;">
+      <div style="background:#0d1a0d; border:1px solid #1a3a1a; border-radius:3px; padding:10px 12px;">
+        <div style="font-size:10px; color:#4caf50; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:4px;">Workout Block — 12:30–1:30 PM</div>
+        <div style="font-size:11px; color:#aaa; line-height:1.6;">Strength training. Non-negotiable.<br>Discipline in the gym = discipline in sales.<br>Show up for yourself first.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DAILY PROGRESS GOALS ===== -->
+  <div class="card col-4">
+    <div class="card-hdr">
+      <div class="card-title">Daily Goal Progress</div>
+      <div class="card-badge badge-gold">Day 1</div>
+    </div>
+    <div class="prog-block">
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Calls (0 / 25)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Outreach DMs (0 / 20)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill blue" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Appointments (0 / 3)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill green" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Follow-Ups (0 / 10)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Content Posted (0 / 1)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill blue" style="width:0%"></div></div>
+      </div>
+      <div class="prog-row">
+        <div class="prog-meta"><span class="prog-lbl">Clients Signed (0 / 1)</span><span class="prog-val">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill green" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="alert-box">
+      <div class="alert-title">Remember This</div>
+      <div class="alert-text">You don't have clients yet. That changes TODAY. Every hour you spend not calling is an hour someone else gets that client. Dial.</div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE-SPECIFIC INSTRUCTIONS (full width) ===== -->
+  <div class="card col-12" id="phase-instruction-card">
+    <div class="card-hdr">
+      <div class="card-title" id="phase-instr-title">Current Phase Instructions</div>
+      <div class="card-badge badge-gold" id="phase-instr-badge">Live</div>
+    </div>
+    <div id="phase-detail"></div>
+  </div>
+
+  <!-- ===== COLD CALL SCRIPTS ===== -->
+  <div class="card col-6">
+    <div class="card-hdr">
+      <div class="card-title">Call Scripts — Use These</div>
+      <div class="card-badge badge-green">Live</div>
+    </div>
+    <div class="script-wrap">
+      <div class="script-box">
+        <div class="script-label">Opener — Get the Owner</div>
+        <div class="script-text">"Hey, quick question — are you the owner?" [Yes] "Perfect. I'll keep it short, not a sales pitch. I work with [industry] businesses to set up automated systems that bring in more leads and handle all the follow-up. Takes about a week to get running. Would you be open to a 10-minute walkthrough to see if it even makes sense for you?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-label">If They Ask "What Is It?"</div>
+        <div class="script-text">"Basically I build a system that captures every lead that comes in — from your website, Google, social — responds to them automatically in under 60 seconds, books them to your calendar, and follows up until they convert. You never lose a lead again because no one followed up. Most clients recoup the cost on their first job. Worth 10 minutes?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-label">Objection — "I'm Busy"</div>
+        <div class="script-text">"That's exactly why this works for you. You're busy because you're doing everything manually. What if the leads, follow-ups, and booking ran without you? I'll send you a quick Loom — two minutes, no commitment. Fair?"</div>
+      </div>
+      <div class="script-box">
+        <div class="script-label">Objection — "Not Interested"</div>
+        <div class="script-text">"Totally fair. Quick question before I go — are you happy with how many leads you're currently converting? Because most businesses I talk to are losing 3–5 jobs a week just from slow follow-up. If that's not your problem, you're good. But if it is — this is worth 10 minutes."</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== OUTBOUND SYSTEM ===== -->
+  <div class="card col-6">
+    <div class="card-hdr">
+      <div class="card-title">Outbound System — Today</div>
+      <div class="card-badge badge-red">Day 1 Protocol</div>
+    </div>
+    <div class="instr-block">
+      <div class="instr-step">
+        <div class="instr-num">1</div>
+        <div class="instr-body">
+          <div class="instr-title">Find 20 Target Businesses</div>
+          <div class="instr-detail">Google Maps: search "[trade] near [city]". Look for roofing, HVAC, plumbing, electrical, landscaping. <strong>Get their phone numbers. Build your list first.</strong></div>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-num">2</div>
+        <div class="instr-body">
+          <div class="instr-title">Call Every Single One — 25 Minimum</div>
+          <div class="instr-detail">No overthinking. Dial. Use the opener script. <strong>Goal: 2–5 appointments booked.</strong> Expect 20 rejections — that is normal. Keep dialing.</div>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-num green">3</div>
+        <div class="instr-body">
+          <div class="instr-title">Send 10 DMs in Parallel</div>
+          <div class="instr-detail">Instagram + Facebook + LinkedIn. Find local businesses with under 500 followers. DM: <strong>"Hey [Name], do you have a system handling your follow-ups automatically? I help [trade] businesses book more jobs without chasing leads — 2 min Loom?"</strong></div>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-num blue">4</div>
+        <div class="instr-body">
+          <div class="instr-title">Run Every Appointment Same Day</div>
+          <div class="instr-detail">Screen share + Loom walkthrough. Show them exactly what the system does. Price: <strong>$1,500–$2,500 setup + $500/mo retainer.</strong> Ask for the close on the call.</div>
+        </div>
+      </div>
+      <div class="instr-step">
+        <div class="instr-num red">5</div>
+        <div class="instr-body">
+          <div class="instr-title">Post 1 Piece of Content</div>
+          <div class="instr-detail">Instagram Reel or LinkedIn post. Topic: <strong>"How trades businesses lose 3–5 jobs a week from slow follow-up."</strong> Film vertical on phone. 60 seconds max. Post by 5pm.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RODRIGO ADVISORY — CORE OFFER ===== -->
+  <div class="card offer-section col-12">
+    <div class="card-hdr">
+      <div class="card-title">Rodrigo Advisory — Core Offer &amp; Sales Engine</div>
+      <div class="card-badge badge-gold">Reference</div>
+    </div>
+    <div class="offer-body">
+      <div class="offer-headline">
+        "I build operating systems for your business that handle lead generation and all back-office admin on autopilot — so you can focus on the work that makes you money. More jobs, more revenue, less stress. One-time setup. Small monthly to maintain and optimize it."
+      </div>
+      <div class="offer-cols">
+        <div class="offer-col">
+          <div class="offer-col-title">What It Does</div>
+          <ul style="list-style:none; padding:0;">
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative; border-bottom:1px solid #181818;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Captures every lead automatically</li>
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative; border-bottom:1px solid #181818;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Instant SMS/email response (under 60 sec)</li>
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative; border-bottom:1px solid #181818;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Books appointments to your calendar</li>
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative; border-bottom:1px solid #181818;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Follows up until they convert</li>
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative; border-bottom:1px solid #181818;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Tracks every deal in a CRM</li>
+            <li style="font-size:12px; color:#bbb; padding:4px 0; padding-left:14px; position:relative;"><span style="position:absolute;left:0;color:#c9a84c;font-weight:700;">›</span> Monthly reports — you see results</li>
+          </ul>
+        </div>
+        <div class="offer-col">
+          <div class="offer-col-title">Pricing Model</div>
+          <div style="padding:8px 0; border-bottom:1px solid #1e1e1e;">
+            <div style="font-size:22px; font-weight:900; color:#c9a84c;">$1,500 – $3,000</div>
+            <div style="font-size:10px; color:#555; margin-top:2px; text-transform:uppercase; letter-spacing:1px;">One-Time Setup Fee</div>
+          </div>
+          <div style="padding:8px 0; border-bottom:1px solid #1e1e1e;">
+            <div style="font-size:22px; font-weight:900; color:#4caf50;">$400 – $900/mo</div>
+            <div style="font-size:10px; color:#555; margin-top:2px; text-transform:uppercase; letter-spacing:1px;">Monthly Retainer</div>
+          </div>
+          <div style="padding:8px 0;">
+            <div style="font-size:14px; font-weight:700; color:#aaa;">Break-even: 1 extra job</div>
+            <div style="font-size:10px; color:#444; margin-top:2px;">Most clients recoup setup cost in Week 1</div>
+          </div>
+        </div>
+        <div class="offer-col">
+          <div class="offer-col-title">Target Industries</div>
+          <div style="display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:6px;padding-top:4px;">
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Roofing</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">HVAC</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Plumbing</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Electrical</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Landscaping</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Real Estate</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Legal</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Fitness</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Consulting</span>
+            <span style="background:#1a1a1a;border:1px solid #2a2a2a;border-radius:2px;padding:4px 8px;font-size:10px;color:#ccc;">Any SMB</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="offer-col-title" style="font-size:9px;font-weight:800;color:#c9a84c;letter-spacing:1.5px;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid #1e1e1e;margin-bottom:10px;">3 Versions of the Pitch</div>
+        <div style="display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;gap:10px;">
+          <div class="script-box gold-box" style="flex:1 1 250px;-webkit-box-flex:1;-ms-flex:1 1 250px;">
+            <div class="script-label">Cold Call</div>
+            <div class="script-text">"Are you the owner? Quick question — not a sales pitch. I build systems for [trade] businesses that respond to every lead automatically, book jobs to your calendar, and follow up until they convert. Most guys lose 3–5 jobs a week just because nobody followed up fast enough. Takes a week to set up, recoup cost on the first job. Worth a 10-minute walkthrough?"</div>
+          </div>
+          <div class="script-box gold-box" style="flex:1 1 250px;-webkit-box-flex:1;-ms-flex:1 1 250px;">
+            <div class="script-label">Text / DM</div>
+            <div class="script-text">"Hey [Name] — do you have anything handling your lead follow-ups automatically right now? I build systems for [trade] businesses that respond to leads in under 60 seconds, book appointments, and follow up on autopilot. One-time setup, small monthly. Quick Loom showing what it looks like?"</div>
+          </div>
+          <div class="script-box gold-box" style="flex:1 1 250px;-webkit-box-flex:1;-ms-flex:1 1 250px;">
+            <div class="script-label">In-Person</div>
+            <div class="script-text">"So what I do is build the entire backend of your business — lead capture, instant response, booking, follow-up — all automated. A lead comes in at midnight, they get a text in 30 seconds, it books them to your calendar, follows up for weeks. You just show up to the jobs. One-time setup fee, small monthly. What does your follow-up look like right now?"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ===================== FOOTER ===================== -->
+<div class="footer">
+  <div class="footer-left"><span>Rodrigo Advisory</span> — Day 1 Command Center</div>
+  <div class="footer-right">AUTO-REFRESH: 10s | ES5 | iOS 10 SAFE</div>
+</div>
+
+<!-- ===================== ES5 JAVASCRIPT ===================== -->
+<script>
+(function () {
+
+  /* ── CONSTANTS ── */
+  var DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  /* ── PHASE DEFINITIONS ── */
+  /* Minutes from midnight */
+  var PHASES = [
+    {
+      start: 0,
+      end:   7 * 60,
+      id:    'early',
+      label: 'EARLY MORNING — PREPARE',
+      color: '#888',
+      desc:  'Before the battle starts. Prepare your mind.',
+      next:  'CALL BLOCK starts at 8:00 AM',
+      badge: 'Pre-Game'
+    },
+    {
+      start: 7 * 60,
+      end:   8 * 60,
+      id:    'prep',
+      label: 'MORNING PREP — LOAD UP',
+      color: '#c9a84c',
+      desc:  'Review offer, review scripts, build your call list now.',
+      next:  'CALL BLOCK starts at 8:00 AM',
+      badge: 'Gear Up'
+    },
+    {
+      start: 8 * 60,
+      end:   12 * 60,
+      id:    'morning',
+      label: 'CALL BLOCK — GET APPOINTMENTS',
+      color: '#f44336',
+      desc:  'This is the most important block of your day. Nothing else matters right now.',
+      next:  'WORKOUT at 12:30 PM',
+      badge: 'PRIME TIME'
+    },
+    {
+      start: 12 * 60,
+      end:   12 * 60 + 30,
+      id:    'lunch',
+      label: 'TRANSITION — WRAP CALLS',
+      color: '#f57c00',
+      desc:  'Log your numbers. Prep for workout.',
+      next:  'WORKOUT starts in minutes',
+      badge: 'Wind Down'
+    },
+    {
+      start: 12 * 60 + 30,
+      end:   13 * 60 + 30,
+      id:    'workout',
+      label: 'WORKOUT — DISCIPLINE BLOCK',
+      color: '#4caf50',
+      desc:  'Non-negotiable. The gym is where you prove to yourself you follow through.',
+      next:  'BUILD + FOLLOW-UP at 2:00 PM',
+      badge: 'IRON TIME'
+    },
+    {
+      start: 13 * 60 + 30,
+      end:   14 * 60,
+      id:    'post-workout',
+      label: 'POST-WORKOUT RESET',
+      color: '#42a5f5',
+      desc:  'Eat. Recover. Prep for afternoon block.',
+      next:  'BUILD + FOLLOW-UP at 2:00 PM',
+      badge: 'Recharge'
+    },
+    {
+      start: 14 * 60,
+      end:   18 * 60,
+      id:    'afternoon',
+      label: 'BUILD + FOLLOW-UP BLOCK',
+      color: '#42a5f5',
+      desc:  'Run appointments. Follow up. Build systems. Post content.',
+      next:  'WIND DOWN at 6:00 PM',
+      badge: 'EXECUTE'
+    },
+    {
+      start: 18 * 60,
+      end:   20 * 60,
+      id:    'evening',
+      label: 'EVENING — LOG + CONNECT',
+      color: '#c9a84c',
+      desc:  'Log your numbers. Send final follow-ups. Review tomorrow.',
+      next:  'RESET + PLAN at 8:00 PM',
+      badge: 'Debrief'
+    },
+    {
+      start: 20 * 60,
+      end:   24 * 60,
+      id:    'night',
+      label: 'RESET + PLAN TOMORROW',
+      color: '#888',
+      desc:  'Protect sleep. Plan tomorrow\'s call list. No screens after 10pm.',
+      next:  'MORNING PREP at 7:00 AM',
+      badge: 'Reset'
+    }
+  ];
+
+  /* ── PHASE INSTRUCTIONS ── */
+  var PHASE_INSTRUCTIONS = {
+    'early': {
+      title: 'Early Morning — What To Do Now',
+      badge: 'Prepare',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Read Proverbs 16:3 Aloud</div><div class="instr-detail">Commit this day to the Lord. Say your goals out loud. Speak over your day before it starts.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Review Your Offer Out Loud</div><div class="instr-detail"><strong>"I build operating systems that automate lead generation and back-office admin."</strong> Say it. Own it. Believe it.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Build Your Call List for 8am</div><div class="instr-detail">Find 20 businesses on Google Maps right now. Roofing, HVAC, plumbing, electrical, landscaping. Get names and numbers. You should have your list ready before 8.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">4</div>' +
+          '<div class="instr-body"><div class="instr-title">Eat. Hydrate. Do Not Scroll.</div><div class="instr-detail">No social media before the call block. Protect your mental state. You need edge, not distraction.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'prep': {
+      title: 'Morning Prep — Final Checks Before Call Block',
+      badge: 'Gear Up',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Call List Ready?</div><div class="instr-detail">You need 20+ business names and phone numbers loaded. If not — do it NOW. Calls start in less than 60 minutes.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num red">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Read Your Script Out Loud Twice</div><div class="instr-detail"><strong>"Hey, quick question — are you the owner?"</strong> Warm your voice. Lose the nerves before the first call, not during it.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Set Your Goal For the Block</div><div class="instr-detail">25 dials. 10 conversations. <strong>2–5 appointments booked.</strong> Write that number somewhere visible. Aim at it.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'morning': {
+      title: 'CALL BLOCK — Step-by-Step Instructions',
+      badge: 'PRIME TIME',
+      html:
+        '<div class="alert-box">' +
+          '<div class="alert-title">This is the most important hour of your day</div>' +
+          '<div class="alert-text">You have no clients. The only way that changes is by making calls. Stop reading this and start dialing. Come back when you have 5 calls done.</div>' +
+        '</div>' +
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num red">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Dial. Do Not Overthink the Opener.</div><div class="instr-detail"><strong>"Hey, quick question — are you the owner?"</strong> That is all. When they say yes, keep going. When they say no, ask to be transferred. Simple.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num red">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Goal: 25 Calls Before 12:00 PM</div><div class="instr-detail">That is 6–7 calls per hour. Entirely achievable. Most will not answer — leave no voicemail, move on. Voicemails waste time on Day 1.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Track Every Call</div><div class="instr-detail">Calls / Conversations / Appointments. Keep a tally on paper. This data is your feedback loop. You cannot improve what you do not measure.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">4</div>' +
+          '<div class="instr-body"><div class="instr-title">When You Book an Appointment</div><div class="instr-detail">Confirm date + time + Zoom/phone. Send a text reminder immediately: <strong>"Hey [Name], just confirming our call at [time] today. I will send a link 5 minutes before. Looking forward to it. — Rodrigo"</strong></div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">5</div>' +
+          '<div class="instr-body"><div class="instr-title">Rejection is Feedback, Not Failure</div><div class="instr-detail">Expect 20 no\'s. This is normal. Statistically, in 25 calls you will have 10+ conversations. In 10 conversations you will book 1–3 appointments. <strong>Do not stop at 5 calls.</strong></div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'lunch': {
+      title: 'Transition — Wrap Up and Prepare',
+      badge: 'Wind Down',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Log Your Call Numbers</div><div class="instr-detail">How many calls? Conversations? Appointments booked? Write it down. Be honest. The number tells you what to fix tomorrow.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Eat. Gym is in 30 minutes.</div><div class="instr-detail">Light meal. Protein. Do not get heavy — you are training at 12:30. Drink water.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'workout': {
+      title: 'WORKOUT — Discipline Block',
+      badge: 'IRON TIME',
+      html:
+        '<div class="alert-box">' +
+          '<div class="alert-title">Non-Negotiable</div>' +
+          '<div class="alert-text">The gym is where you prove to yourself that you do what you say. If you skip this you will skip sales calls. Discipline is binary.</div>' +
+        '</div>' +
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Strength Training — 45–60 Min</div><div class="instr-detail">Compound lifts. Bench / Squat / Deadlift / Press. Push yourself. Sweat. The energy you build here carries into every sales call this afternoon.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">2</div>' +
+          '<div class="instr-body"><div class="instr-title">No Phone During Sets</div><div class="instr-detail">One hour fully offline. The leads will still be there. Your focus here matters. Show up completely.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Visualize While Lifting</div><div class="instr-detail">See yourself closing a client today. See the first payment coming in. Use the gym to program your mind, not just your body.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'post-workout': {
+      title: 'Post-Workout Reset — Recharge',
+      badge: 'Recharge',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Protein + Water</div><div class="instr-detail">Recover fast. You need to be sharp for the afternoon block. Eat clean. 15–20 minutes max.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Check Your Appointments</div><div class="instr-detail">Any calls booked from the morning? Confirm them. Send reminder texts. Review your offer one more time before you get on those calls.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'afternoon': {
+      title: 'BUILD + FOLLOW-UP BLOCK — Instructions',
+      badge: 'EXECUTE',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Run Your Booked Appointments</div><div class="instr-detail">Screen share. Walk them through the system. Show the problem first, then the solution. <strong>Price it confidently: $1,500–$2,500 setup + $400–$900/mo.</strong> Ask for the close on the call — "Does this make sense to move forward today?"</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Send 10 Follow-Up Messages</div><div class="instr-detail">Everyone you called this morning who did not answer. Everyone who said "not now." Text: <strong>"Hey [Name] — tried you earlier. Quick 10 min later this week?"</strong> Simple. Direct. No pressure.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Post 1 Piece of Content by 5 PM</div><div class="instr-detail">Instagram Reel, LinkedIn post, or Facebook. Topic ideas: "Why your business is losing leads at 9pm." "What an automated lead system looks like." Film it on your phone. Done &gt; perfect.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">4</div>' +
+          '<div class="instr-body"><div class="instr-title">Improve Your Offer or System</div><div class="instr-detail">What objections came up today? Refine your script. Update your Loom demo. Build the asset that closes the next prospect faster. <strong>Work on the business, not just in it.</strong></div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">5</div>' +
+          '<div class="instr-body"><div class="instr-title">Send 5 More DMs on Social</div><div class="instr-detail">Instagram, Facebook, LinkedIn. Find local service businesses. Short message. Personal. Not spammy. <strong>Volume is a form of skill on Day 1.</strong></div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'evening': {
+      title: 'Evening — Log, Debrief, and Reset',
+      badge: 'Debrief',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Log Today\'s Final Numbers</div><div class="instr-detail">Calls / Conversations / Appointments / Content / Follow-Ups. Be honest. Compare to goal. If you hit it — celebrate briefly, then reset. If not — identify one specific thing to change tomorrow.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num green">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Send Final Follow-Ups</div><div class="instr-detail">Any warm leads from today that need a final text. Keep it simple: <strong>"Hey — just following up from earlier. Worth a 10-minute call?"</strong></div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">3</div>' +
+          '<div class="instr-body"><div class="instr-title">Build Tomorrow\'s Call List Tonight</div><div class="instr-detail">Find 20 new businesses. Get their numbers ready. Wake up with a loaded list and a loaded mindset. Tomorrow you move faster.</div></div>' +
+        '</div>' +
+        '</div>'
+    },
+    'night': {
+      title: 'RESET + PLAN — End of Day',
+      badge: 'Reset',
+      html:
+        '<div class="instr-block">' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">1</div>' +
+          '<div class="instr-body"><div class="instr-title">Plan Tomorrow Morning\'s Call Block</div><div class="instr-detail">List is ready? Script reviewed? Set your alarm for 7am. You are building from zero — every day you don\'t work is a day further from your goal.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num blue">2</div>' +
+          '<div class="instr-body"><div class="instr-title">Read + Pray</div><div class="instr-detail">End the day where you started it. Commit tomorrow to the Lord. Rest is productive. Protect your sleep — 7+ hours minimum.</div></div>' +
+        '</div>' +
+        '<div class="instr-step">' +
+          '<div class="instr-num">3</div>' +
+          '<div class="instr-body"><div class="instr-title">No Screens After 10 PM</div><div class="instr-detail">Phone down. Social media off. Your brain needs to decompress so tomorrow you can execute at full capacity.</div></div>' +
+        '</div>' +
+        '</div>'
+    }
+  };
+
+  /* ── UTILS ── */
+  function pad(n) {
+    return n < 10 ? '0' + n : String(n);
+  }
+
+  function minutesNow() {
+    var d = new Date();
+    return d.getHours() * 60 + d.getMinutes();
+  }
+
+  function getPhase() {
+    var m = minutesNow();
+    var i;
+    for (i = 0; i < PHASES.length; i++) {
+      if (m >= PHASES[i].start && m < PHASES[i].end) {
+        return PHASES[i];
+      }
+    }
+    return PHASES[PHASES.length - 1];
+  }
+
+  function minutesToHHMM(m) {
+    var h = Math.floor(m / 60);
+    var min = m % 60;
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    var h12 = h % 12 === 0 ? 12 : h % 12;
+    return h12 + ':' + pad(min) + ' ' + ampm;
+  }
+
+  /* ── CLOCK ── */
+  function updateClock() {
+    var now = new Date();
+    var h = pad(now.getHours());
+    var m = pad(now.getMinutes());
+    var s = pad(now.getSeconds());
+    var el = document.getElementById('live-clock');
+    if (el) { el.innerHTML = h + ':' + m + ':' + s; }
+
+    var dateEl = document.getElementById('live-date');
+    if (dateEl) {
+      dateEl.innerHTML = DAYS[now.getDay()] + ' &mdash; ' + MONTHS[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+    }
+
+    var upEl = document.getElementById('last-updated');
+    if (upEl) {
+      upEl.innerHTML = 'Refreshed: ' + h + ':' + m + ':' + s;
+    }
+  }
+
+  /* ── PHASE UPDATE ── */
+  function updatePhase() {
+    var phase = getPhase();
+    var now = minutesNow();
+    var remaining = phase.end - now;
+    var remText = remaining + ' min remaining';
+
+    /* Label */
+    var labelEl = document.getElementById('phase-label');
+    if (labelEl) {
+      labelEl.innerHTML = phase.label;
+      labelEl.style.color = phase.color;
+    }
+
+    var descEl = document.getElementById('phase-desc');
+    if (descEl) { descEl.innerHTML = phase.desc; }
+
+    var remEl = document.getElementById('phase-time-remaining');
+    if (remEl) {
+      remEl.innerHTML = remText;
+      remEl.style.color = phase.color;
+    }
+
+    var nextEl = document.getElementById('phase-next');
+    if (nextEl) { nextEl.innerHTML = phase.next; }
+
+    /* Phase banner left border color */
+    var banner = document.getElementById('phase-banner');
+    if (banner) {
+      banner.style.borderBottom = '2px solid ' + phase.color;
+      banner.style.borderLeft = '4px solid ' + phase.color;
+    }
+
+    /* Instructions */
+    var instrTitle = document.getElementById('phase-instr-title');
+    var instrBadge = document.getElementById('phase-instr-badge');
+    var detail     = document.getElementById('phase-detail');
+    var instrData  = PHASE_INSTRUCTIONS[phase.id];
+
+    if (instrData) {
+      if (instrTitle) { instrTitle.innerHTML = instrData.title; }
+      if (instrBadge) { instrBadge.innerHTML = instrData.badge; }
+      if (detail)     { detail.innerHTML = instrData.html; }
+    }
+  }
+
+  /* ── DAY CHANGE DETECTION ── */
+  var startDay = new Date().getDate();
+  function checkDayChange() {
+    var now = new Date();
+    if (now.getDate() !== startDay) {
+      location.reload();
+    }
+  }
+
+  /* ── INIT ── */
+  updateClock();
+  updatePhase();
+
+  setInterval(updateClock, 1000);
+  setInterval(updatePhase, 30000);
+  setInterval(checkDayChange, 60000);
+
+  /* Hard reload every 10 seconds */
+  setInterval(function () {
+    location.reload();
+  }, 10000);
+
+}());
+</script>
+
+</body>
+</html>
